@@ -102,12 +102,12 @@ class BST{
     
     const R* searchTree(const TreeNode<R,K>* root, const K& key) const{
         // We had reached a leaf in our search for the given key which implies 
-        // that the record with the given key does not exist
+        // the record with the given key does not exist
         if(!root){
             cout<<"Record with key "<<key<<" does not exist"<<endl; 
             return nullptr;
         }
-        cout<<root->record<<endl;;
+        
         // if the current node's val equals the given key return the current node's record
         if(root->record == key){
             return &(root->record);
@@ -124,11 +124,16 @@ class BST{
     }
     
 };
+
+// An abstraction of a typical record with key and value
 template <typename K, typename V>
 class Record{
     public:
     Record() = default;
     Record(K key, V value): key(key), value(value){}
+    
+    // operator overloading of comparison operators "==", "<", ">" through friend functions
+    // to enable comparison of the objects of type Record<K,V> using these operators
     friend bool operator==(const Record<K,V> &r1, const Record<K,V> &r2){
         return r1.key == r2.key;
     }
@@ -141,7 +146,16 @@ class Record{
     friend bool operator<(const Record<K,V> &r1, const K & key){
         return r1.key < key;
     }
+
+    friend bool operator>(const Record<K,V> &r1, const Record<K,V> &r2){
+        return r1.key > r2.key;
+    }
+    friend bool operator>(const Record<K,V> &r1, const K & key){
+        return r1.key > key;
+    }
     
+    // operator overloading of "<<" (output) and ">>" (input) stream operators
+    // to input into and output from the objects of type Record<K,V>
     friend ostream& operator<<(ostream &os, const Record<K,V> &record){
         os<<record.key<<" "<<record.value;
         return os;
@@ -154,8 +168,8 @@ class Record{
         return is;
     }
     private:
-    K key;
-    V value;
+    K key;                         // Key
+    V value;                       // Value     
 };
 
 
@@ -172,14 +186,21 @@ int main()
   
   BST<string,string> string_tree;
   auto string_records = vector<string>{"sai","hari","ramu","phani","Samuel"};
-    
   string_tree.buildTree(string_records);
   cout<<"\n\nSTRING_TREE"<<endl;
   auto string_node = string_tree.searchKey("sai");
   if(string_node) cout<<"\n"<<*(string_node)<<endl;
   
   string_tree.printTree();
-Record<int,string> record(2,"sai");
-// cin>>record;
-cout<<record;
+
+  Record<int,string> record(2,"sai");
+  BST<Record<int,string>,int> tree;    
+  while(cin>>record){
+    tree.insertRecord(record);   
+  }
+   tree.printTree();
+   
+  auto record_node = tree.searchKey(100);
+  if(record_node){ cout<<"\n"<<*record_node<<endl;}
+    return 0;
 }
